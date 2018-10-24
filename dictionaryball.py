@@ -36,33 +36,25 @@ def build_team_dictionary(filename):
             
         dictionary['players'] = build_player_dictionary(transpose(data_list))
     return dictionary
-        
+
+
+dictionary = {'home': build_team_dictionary('home-data.txt'), 
+              'away' : build_team_dictionary('away-data.txt')}            
     
 def game_dict():
    return dictionary
 
-dictionary = {'home': build_team_dictionary('home-data.txt'), 
-              'away' : build_team_dictionary('away-data.txt')}
-
-    
 def get_player_attribute(player_name, attribute):
-   try: 
-        return game_dict()['home']['players'][player_name][attribute]
-   except KeyError:
-        try:  
-            return game_dict()['away']['players'][player_name][attribute] 
-        except KeyError:
-            return None
-    
+    home_players = game_dict()['home']['players']
+    away_players = game_dict()['away']['players']
+    all_players = {**home_players, **away_players}
+    return all_players[player_name][attribute]
 
 def num_points_scored(player_name):
    return get_player_attribute(player_name, 'points')
     
-    
-
 def shoe_size(player_name):
    return get_player_attribute(player_name, 'shoe')
-
 
 def team_colors(team_name):
      if game_dict()['home']['team_name'] == team_name:
@@ -128,7 +120,7 @@ def winning_team():
     place = sorted(teams, key= lambda x: x[1], reverse=True )[0][0]
     return game_dict()[place]['team_name']
 
-def player_with_longest_name(game_dict):
+def player_with_longest_name():
     places = ['home', 'away']
     name_length =[]
     for place in places:
@@ -137,7 +129,20 @@ def player_with_longest_name(game_dict):
                              len(player)))
     return sorted(name_length, key= lambda x: x[1], reverse=True )[0][0]
 
-def long_name_steals_a_ton(game_dict):
+def big_shoe_rebounds():
+    places = ['home', 'away']
+    rebound_pairs =[]
+    for place in places:
+        for player in list(game_dict()[place]['players'].keys()):
+            rebound_pairs.append((player, 
+                             shoe_size(player)))
+    p = sorted(rebound_pairs, key= lambda x: x[1], reverse=True )[0][0] 
+    return p, get_player_attribute(p, 'rebounds')
+
+
+
+
+def long_name_steals_a_ton():
     pwln = player_with_longest_name(game_dict)
     places = ['home', 'away']
     most_steals =[]
